@@ -1,0 +1,109 @@
+<main class="main">
+  <h2 tuiTitle="l" class="main-title">История переводов</h2>
+
+  <div class="history-container">
+    <!-- Выбор счета -->
+    <div class="account-selection">
+      <div class="account-selection-title">Выберите счет:</div>
+      <tui-carousel [draggable]="true" [itemsCount]="1" [(index)]="currentCardIndex" (indexChange)="onCardIndexChange($event)">
+        <ng-container *ngFor="let item of cards; let i = index">
+          <div *tuiItem tuiCardMedium class="card" [style.background]="item.gradient">
+            <h2 tuiTitle>
+              BANK
+              <span tuiSubtitle>{{ item.title }}</span>
+            </h2>
+            <tui-badge size="xl" class="money">
+              <tui-icon icon="@tui.wallet" />
+              {{ item.content }}
+            </tui-badge>
+          </div>
+        </ng-container>
+      </tui-carousel>
+
+      <tui-pagination *ngIf="cards.length > 1" size="s" [length]="cards.length" [(index)]="currentCardIndex" />
+    </div>
+
+    <div class="month-controls">
+      <div class="range-controls">
+        <button tuiButton type="button" appearance="secondary" size="m" class="tui-space_bottom-2"
+          (click)="isMonthSelectorVisible = !isMonthSelectorVisible">
+          {{ isMonthSelectorVisible ? 'Скрыть календарь' : 'Выбрать даты' }}
+        </button>
+      </div>
+
+      <div class="month-selector" *ngIf="isMonthSelectorVisible">
+        <div class="wrapper">
+          <tui-calendar [month]="firstMonth" [showAdjacent]="false" [value]="value" [(hoveredItem)]="hoveredItem"
+            (dayClick)="onDayClick($event)" (monthChange)="onMonthChangeFirst($event)"></tui-calendar>
+        </div>
+      </div>
+    </div>
+
+    <div class="selected-range" *ngIf="value">
+      <span>
+        Выбранные даты:
+        <strong>{{ value.from.toLocalNativeDate() | date:'dd.MM.yyyy' }}</strong>
+        <ng-container *ngIf="!value.isSingleDay">
+          – <strong>{{ value.to.toLocalNativeDate() | date:'dd.MM.yyyy' }}</strong>
+        </ng-container>
+      </span>
+    </div>
+
+    <!-- Лоадер -->
+    <div class="loader-container" *ngIf="isLoading">
+      <tui-loader size="l"></tui-loader>
+    </div>
+
+    <div class="operations-container" *ngIf="!isLoading">
+      <h2 class="tui-text_h2">История транзакций</h2>
+      <div class="transactions-list">
+        <ng-container *ngIf="transactionsForSelectedRange.length > 0; else noTransactions">
+          <div tuiAccordion>
+            <div *ngFor="let transaction of transactionsForSelectedRange" tuiAccordionItem>
+              <div tuiAccordionItemButton [class.incoming]="transaction.isIncoming">
+                <div class="transaction-header">
+                  <div class="transaction-main-info">
+                    <div class="transaction-date">
+                      {{transaction.formattedDate}}
+                    </div>
+                    <div class="transaction-description">
+                      {{transaction.description}}
+                    </div>
+                  </div>
+                  <div class="transaction-amount" [class.income]="transaction.isIncoming">
+                    {{transaction.displayAmount}}
+                  </div>
+                </div>
+              </div>
+              <ng-template tuiAccordionItemContent>
+                <div class="transaction-details">
+                  <div class="detail-row">
+                    <span class="detail-label">Тип:</span>
+                    <span class="detail-value">{{transaction.formattedType}}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="transaction.sender_name">
+                    <span class="detail-label">Отправитель:</span>
+                    <span class="detail-value">{{transaction.sender_name}}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="transaction.recipient_name">
+                    <span class="detail-label">Получатель:</span>
+                    <span class="detail-value">{{transaction.recipient_name}}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Дата и время:</span>
+                    <span class="detail-value">{{transaction.created_at | date:'dd.MM.yyyy HH:mm:ss'}}</span>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noTransactions>
+          <div class="tui-space_top-3 tui-space_bottom-3 tui-text_body-l no-transactions">
+            Операции за выбранный диапазон отсутствуют
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,77 @@
+<div class="row flex-center flex">
+  <div class="col-6 form-widget" aria-live="polite">
+    <h1 class="header">Вход в систему</h1>
+    <p class="description">Войдите через email или социальные сети</p>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="form-widget">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" class="inputField" type="email" placeholder="Ваш email"
+          [attr.disabled]="loading ? '' : null" style="width: 90%;" />
+        <div *ngIf="authForm.get('email')?.touched && authForm.get('email')?.errors?.['required']"
+          class="error-message">
+          Email обязателен
+        </div>
+        <div *ngIf="authForm.get('email')?.touched && authForm.get('email')?.errors?.['email']" class="error-message">
+          Введите корректный email
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input id="password" formControlName="password" class="inputField" type="password" placeholder="Ваш пароль"
+          [attr.disabled]="loading ? '' : null" style="width: 90%;" />
+        <div *ngIf="authForm.get('password')?.touched && authForm.get('password')?.errors?.['required']"
+          class="error-message">
+          Пароль обязателен
+        </div>
+      </div>
+
+      <div>
+        <button tuiButton type="submit" class="button block"
+          style="background-color: #ffdd2d; color: #000; border-radius: 10px;" [disabled]="loading || !authForm.valid"
+          loading="loading">
+          {{ loading ? 'Вход...' : 'Войти' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="divider">
+      <span>или</span>
+    </div>
+
+    <div class="social-auth">
+      <button class="gsi-material-button" type="button" (click)="signInWithGoogle()" [disabled]="loading">
+        <div class="gsi-material-button-state"></div>
+        <div class="gsi-material-button-content-wrapper">
+          <div class="gsi-material-button-icon">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+              <path fill="none" d="M0 0h48v48H0z"></path>
+            </svg>
+          </div>
+          <span class="gsi-material-button-contents">Продолжить с Google</span>
+          <span style="display: none;">Продолжить с Google</span>
+        </div>
+      </button>
+
+      <button class="gsi-material-button" type="button" (click)="signInWithYandex()" [disabled]="loading" style="margin-top: 12px;">
+        <div class="gsi-material-button-state"></div>
+        <div class="gsi-material-button-content-wrapper">
+          <div class="gsi-material-button-icon" style="display: flex; align-items: center; justify-content: center;">
+            <img src="assets/icons/Yandex.svg" alt="Яндекс" style="width: 24px; height: 24px; display: block;">
+          </div>
+          <span class="gsi-material-button-contents">Продолжить с Яндекс ID</span>
+          <span style="display: none;">Продолжить с Яндекс ID</span>
+        </div>
+      </button>
+    </div>
+
+    <div class="register-link">
+      <p>Ещё нет учетной записи? <a routerLink="/registration">Зарегистрироваться</a></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="chat-container">
+    <div class="messages-container" #scrollContainer>
+        <div *ngFor="let message of messages" 
+             class="message" 
+             [class.user-message]="message.isUser"
+             [class.bot-message]="!message.isUser">
+            <div class="message-wrapper">
+                <img *ngIf="!message.isUser" 
+                     [src]="message.avatar" 
+                     class="bot-avatar" 
+                     [alt]="'Бот поддержки'">
+                <div class="message-content">
+                    <div class="message-text">{{ message.text }}</div>
+                    <div class="message-time">{{ message.timestamp | date:'HH:mm' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="input-container">
+        <textarea
+            #messageInput
+            [(ngModel)]="currentMessage"
+            (keydown)="onEnter($event)"
+            class="message-input"
+            placeholder="Введите сообщение..."
+            [rows]="1"
+            (input)="adjustTextarea(messageInput)"></textarea>
+        <button
+            class="send-button"
+            type="button"
+            (click)="sendMessage()"
+            [disabled]="!currentMessage.trim()"
+            title="Отправить сообщение">
+            <span class="send-icon">➤</span>
+        </button>
+    </div>
+</div>

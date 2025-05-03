@@ -1,0 +1,255 @@
+<main>
+    <h2 tuiTitle="l" class="main-title">Платежи и переводы</h2>
+
+    <div class="phone-transfer-block">
+        <div class="phone-transfer-title">
+            Перевод по номеру телефона
+        </div>
+        <tui-input-phone *tuiLet="items$ | async as items" [allowText]="true" [tuiTextfieldCustomContent]="avatar"
+            [(ngModel)]="value" (searchChange)="onSearch($event)" [pseudoInvalid]="isSearchingUsers">
+            {{isSearchingUsers ? "Поиск..." : "Начните поиск"}}
+            <ng-container *ngIf="items?.length">
+                <tui-data-list *tuiDataList>
+                    <button *ngFor="let item of items" tuiOption type="button" [disabled]="item.disabled || false"
+                        [value]="item.phone" (click)="onClick(item)" class="user-card">
+                        <tui-avatar size="s" class="tui-space_right-3 user-avatar" [src]="item.avatarUrl">
+                        </tui-avatar>
+                        <span class="user">
+                            <span class="user-name">{{ item.firstName }} {{ item.lastName }}</span>
+                            <span class="user-details">
+                                <span class="phone" *ngIf="item.phone">{{ item.phone }}</span>
+                                <span class="email" *ngIf="item.email && (!item.phone || item.phone !== item.email)">{{
+                                    item.email }}</span>
+                            </span>
+                        </span>
+                    </button>
+                </tui-data-list>
+            </ng-container>
+        </tui-input-phone>
+        <ng-template #avatar>
+            <tui-avatar *ngIf="user$ | async as user" size="s" [src]="user.avatarUrl">
+            </tui-avatar>
+        </ng-template>
+
+        <tui-elastic-container>
+            <ng-container *ngIf="isPhoneValid">
+                <!-- Информация о выбранном пользователе -->
+                <div *ngIf="selectedUser" class="selected-user-info" style="background-color: #fff; margin-top: 1rem;">
+                    <div class="selected-user-name">{{ selectedUser.firstName }} {{ selectedUser.lastName }}</div>
+                    <div class="selected-user-details">
+                        <div *ngIf="selectedUser.phone" class="phone-info">
+                            <span class="phone-label">Телефон:</span>
+                            <span class="phone-value">{{ selectedUser.phone }}</span>
+                        </div>
+                        <div *ngIf="selectedUser.email && (!selectedUser.phone || selectedUser.phone !== selectedUser.email)"
+                            class="email-info">
+                            <span class="email-label">Email:</span>
+                            <span class="email-value">{{ selectedUser.email }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phone-transfer-title" [class.loading-state]="isLoadingCurrentUserAccounts">
+                    Счёт отправителя:
+                    <span *ngIf="isLoadingCurrentUserAccounts" class="loading-indicator">(Загрузка...)</span>
+                </div>
+                <tui-carousel [draggable]="true" [itemsCount]="1" [(index)]="currentCardIndex"
+                    (indexChange)="updateCurrencyPrefix()">
+                    <ng-container *ngFor="let item of cards; let i = index">
+                        <div *tuiItem tuiCardMedium class="card" [style.background]="item.gradient">
+                            <h2 tuiTitle>
+                                BANK
+                                <span tuiSubtitle>{{ item.title }}</span>
+                            </h2>
+                            <tui-badge size="xl" class="money">
+                                <tui-icon icon="@tui.wallet" />
+                                {{ item.content }}
+                            </tui-badge>
+                        </div>
+                    </ng-container>
+                </tui-carousel>
+
+                <tui-pagination size="s" [length]="cards.length" [(index)]="currentCardIndex" />
+
+                <tui-textfield>
+                    <input [prefix]="currencyPrefix" tuiInputSlider [max]="30000" [min]="0" [tuiNumberFormat]="{
+                        decimalSeparator: ',',
+                        thousandSeparator: '.',
+                        precision: 1,
+                    }" [(ngModel)]="money_value" />
+                    <input tuiSlider type="range" />
+                </tui-textfield>
+
+                <div class="phone-transfer-title">
+                    Комментарий к переводу:
+                </div>
+                <div class="tui-form__row">
+                    <tui-textfield>
+                        <input tuiTextfield type="text" [(ngModel)]="transferDescription"
+                            placeholder="Описание платежа (опционально)" />
+                    </tui-textfield>
+                </div>
+
+                <div class="phone-transfer-title">
+                    Счёт получателя:
+                </div>
+                <div class="user-account-selection">
+                    <ng-container *ngFor="let account of firstUserAccounts; let i = index">
+                        <label tuiSurface class="selected-user-account"
+                            [class.selected]="selectedUserAccount === account.id">
+                            <span class="user-buttons-text"><strong>{{ account.formattedType || account.account_type
+                                    }}</strong></span>
+                            <tui-badge size="m" class="currency">{{ account.displayName || 'RUB' }}</tui-badge>
+                            <input tuiSurfaceLayer type="radio" [value]="account.id" [(ngModel)]="selectedUserAccount"
+                                name="getterAccount" />
+                            <div tuiRipple tuiSurfaceLayer [style.background-color]="'var(--tui-background-white)'">
+                            </div>
+                        </label>
+                    </ng-container>
+                </div>
+
+                <button size="m" tuiButton type="button" class="tui-space_right-2 transfer-button"
+                    [disabled]="isTransferring || !selectedUserAccount" (click)="performTransfer()">
+                    <span class="user-buttons-text">
+                        <strong>
+                            <ng-container *ngIf="!isTransferring">Отправить</ng-container>
+                            <ng-container *ngIf="isTransferring">
+                                <tui-loader size="xs" class="loader"></tui-loader> Выполняется...
+                            </ng-container>
+                        </strong>
+                    </span>
+                    <div class="disabled-overlay" *ngIf="isTransferring || !selectedUserAccount"></div>
+                </button>
+            </ng-container>
+
+            <ng-template #content let-observer>
+                <div>
+                    <p>Сумма перевода: {{ currencyPrefix }} {{ money_value }}</p>
+                    <p *ngIf="transferDescription">Описание: {{ transferDescription }}</p>
+                </div>
+                <div class="buttons">
+                    <button size="m" tuiButton type="button" class="tui-space_right-2" (click)="observer.complete()">
+                        <span class="user-buttons-text"><strong>Ок</strong></span>
+                    </button>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <div class="header">
+                    <tui-icon icon="@tui.square" [style.font-size.rem]="3.585"
+                        [style.color]="'var(--tui-background-accent-1)'" />
+                </div>
+            </ng-template>
+        </tui-elastic-container>
+    </div>
+
+    <!-- New Account Transfer Block with the same UI style -->
+    <div class="account-transfer-block">
+        <div class="account-transfer-title">
+            Перевод между своими счетами
+        </div>
+
+        <tui-elastic-container>
+            <ng-container *ngIf="userAccounts.length > 1">
+                <div class="account-transfer-title" [class.loading-state]="isLoadingCurrentUserAccounts">
+                    Счёт списания:
+                    <span *ngIf="isLoadingCurrentUserAccounts" class="loading-indicator">(Загрузка...)</span>
+                </div>
+                <tui-carousel [draggable]="true" [itemsCount]="1" [(index)]="ownFromAccountIndex"
+                    (indexChange)="updateOwnTransferCurrencyPrefix()">
+                    <ng-container *ngFor="let item of cards; let i = index">
+                        <div *tuiItem tuiCardMedium class="card" [style.background]="item.gradient">
+                            <h2 tuiTitle>
+                                BANK
+                                <span tuiSubtitle>{{ item.title }}</span>
+                            </h2>
+                            <tui-badge size="xl" class="money">
+                                <tui-icon icon="@tui.wallet" />
+                                {{ item.content }}
+                            </tui-badge>
+                        </div>
+                    </ng-container>
+                </tui-carousel>
+
+                <tui-pagination size="s" [length]="cards.length" [(index)]="ownFromAccountIndex" />
+
+                <tui-textfield>
+                    <input [prefix]="ownTransferCurrencyPrefix" tuiInputSlider [max]="30000" [min]="0" [tuiNumberFormat]="{
+                        decimalSeparator: ',',
+                        thousandSeparator: '.',
+                        precision: 1,
+                    }" [(ngModel)]="ownTransferAmount" />
+                    <input tuiSlider type="range" />
+                </tui-textfield>
+
+                <div class="account-transfer-title">
+                    Комментарий к переводу:
+                </div>
+                <div class="tui-form__row">
+                    <tui-textfield>
+                        <input tuiTextfield type="text" [(ngModel)]="ownTransferDescription"
+                            placeholder="Описание платежа (опционально)" />
+                    </tui-textfield>
+                </div>
+
+                <div class="account-transfer-title">
+                    Счёт пополнения:
+                </div>
+                <div class="user-account-selection">
+                    <ng-container *ngFor="let account of userAccounts; let i = index">
+                        <label tuiSurface class="selected-user-account"
+                            [class.selected]="ownToAccountId === account.id"
+                            [class.disabled]="cards[ownFromAccountIndex]?.id === account.id">
+                            <span class="user-buttons-text"><strong>{{ account.formattedType || account.account_type }}</strong></span>
+                            <tui-badge size="m" class="currency">{{ account.displayName || 'RUB' }}</tui-badge>
+                            <input tuiSurfaceLayer type="radio" [value]="account.id" [(ngModel)]="ownToAccountId"
+                                name="ownToAccount" [disabled]="cards[ownFromAccountIndex]?.id === account.id" />
+                            <div tuiRipple tuiSurfaceLayer [style.background-color]="'var(--tui-background-white)'">
+                            </div>
+                        </label>
+                    </ng-container>
+                </div>
+
+                <button size="m" tuiButton type="button" class="tui-space_right-2 transfer-button"
+                    [disabled]="isOwnTransferring || !ownToAccountId || cards[ownFromAccountIndex]?.id === ownToAccountId || !isOwnTransferAmountValid()"
+                    (click)="performOwnAccountsTransfer()">
+                    <span class="user-buttons-text">
+                        <strong>
+                            <ng-container *ngIf="!isOwnTransferring">Отправить</ng-container>
+                            <ng-container *ngIf="isOwnTransferring">
+                                <tui-loader size="xs" class="loader"></tui-loader> Выполняется...
+                            </ng-container>
+                        </strong>
+                    </span>
+                    <div class="disabled-overlay" *ngIf="isOwnTransferring || !ownToAccountId || cards[ownFromAccountIndex]?.id === ownToAccountId || !isOwnTransferAmountValid()"></div>
+                </button>
+            </ng-container>
+
+            <!-- Message when not enough accounts for transfer -->
+            <div *ngIf="userAccounts.length <= 1" class="not-enough-accounts-message">
+                <p>Для перевода между своими счетами необходимо иметь как минимум 2 счета.</p>
+                <p>Создайте дополнительный счет в разделе "Мои счета".</p>
+            </div>
+        </tui-elastic-container>
+    </div>
+
+    <h2 tuiTitle="m" class="sub-title">Другие платежи</h2>
+
+    <div class="other-payments">
+        <ng-container *ngFor="let method of paymentMethods; let i = index">
+            <label tuiSurface [style.border-radius.rem]="0.75" [style.padding.rem]="0.5" class="payment-method"
+                [class.selected]="selectedMethod === method.id">
+                <span class="buttons-text"><strong>{{ method.name }}</strong></span>
+                <input tuiSurfaceLayer type="radio" [value]="method.id" [(ngModel)]="selectedMethod"
+                    name="paymentMethods" (change)="showNotification()" />
+                <div tuiRipple tuiSurfaceLayer [style.background-color]="'var(--tui-background-white)'"></div>
+            </label>
+        </ng-container>
+    </div>
+
+    <!-- Message when not enough accounts for transfer -->
+    <div *ngIf="notEnoughAccounts" class="not-enough-accounts-message">
+        <p>Для перевода между своими счетами необходимо иметь как минимум 2 счета.</p>
+        <p>Создайте дополнительный счет в разделе "Мои счета".</p>
+    </div>
+</main>

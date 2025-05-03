@@ -1,0 +1,116 @@
+@import '@taiga-ui/core/styles/taiga-ui-local.less';
+
+.registration-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--tui-base-01);
+    min-height: 500px;
+}
+
+.registration-container {
+    width: 100%;
+    max-width: 28rem;
+    margin-top: -90%;
+    background: var(--tui-base-02);
+    border-radius: var(--tui-radius-l);
+    box-shadow: var(--tui-shadow);
+}
+
+.registration-form {
+    .form-title {
+        margin: 0 0 2rem;
+        text-align: center;
+        color: var(--tui-text-01);
+    }
+
+    .form-row {
+        margin-bottom: 1.5rem;
+        position: relative;
+
+        &:last-of-type {
+            margin-bottom: 2rem;
+        }
+
+        tui-input,
+        tui-input-password {
+            display: block;
+            width: 100%;
+        }
+
+        .error-message {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.25rem;
+            font-size: var(--tui-font-size-xs);
+            color: var(--tui-error-fill);
+        }
+    }
+
+    .error-container {
+        margin-bottom: 1.5rem;
+        background-color: rgba(244, 87, 37, 0.1);
+        padding: 1rem;
+        border-radius: var(--tui-radius-m);
+        border-left: 4px solid var(--tui-error);
+
+        .api-error-message {
+            color: var(--tui-error);
+            font-size: 0.875rem;
+            text-align: center;
+        }
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: center;
+
+        .submit-button {
+            min-width: 14rem;
+            margin-top: 1rem;
+        }
+    }
+}
+
+tui-error {
+    position: absolute;
+    left: 0;
+    bottom: -1.25rem;
+    font-size: 0.75rem;
+    color: var(--tui-error-fill);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(100%);
+    }
+}
+
+.login-link {
+  margin-top: 20px;
+  text-align: center;
+  
+  p {
+    font-size: 14px;
+    color: var(--tui-text-02);
+  }
+  
+  a {
+    color: var(--tui-link);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: var(--tui-link-hover);
+      text-decoration: underline;
+    }
+  }
+}

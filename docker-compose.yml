@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CACHE_BUST=${CACHE_BUST:-$(date +%s)}
+    container_name: pin443-frontend
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - app-volume:/app
+    networks:
+      - shared-net
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    container_name: pin443-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - app-volume:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - shared-net
+    depends_on:
+      - frontend
+
+volumes:
+  app-volume:
+
+networks:
+  shared-net:
+    external: true

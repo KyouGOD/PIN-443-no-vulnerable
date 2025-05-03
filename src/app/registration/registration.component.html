@@ -1,0 +1,84 @@
+<div class="registration-wrapper">
+    <div class="registration-container" style="margin-top: 0%;">
+        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="registration-form">
+            <h2 class="form-title">Регистрация</h2>
+
+            <!-- Show API error message if present -->
+            <div class="form-row error-container" *ngIf="errorMessage">
+                <div class="api-error-message">{{ errorMessage }}</div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Имя</label>
+                    <input tuiTextfield formControlName="firstName" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('firstName') }}
+                </div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Фамилия</label>
+                    <input tuiTextfield formControlName="lastName" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('lastName') }}
+                </div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Email</label>
+                    <input tuiTextfield type="email" formControlName="email" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('email') }}
+                </div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Телефон</label>
+                    <input tuiTextfield formControlName="phone" placeholder="+7XXXXXXXXXX" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('phone') }}
+                </div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Пароль</label>
+                    <input tuiTextfield type="password" formControlName="password" autocomplete="new-password" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('password') }}
+                </div>
+            </div>
+
+            <div class="form-row" style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px;">
+                <tui-textfield>
+                    <label tuiLabel>Подтверждение пароля</label>
+                    <input tuiTextfield type="password" formControlName="confirmPassword" autocomplete="new-password" />
+                </tui-textfield>
+                <div class="error-message">
+                    {{ getErrorMessage('confirmPassword') }}
+                </div>
+            </div>
+
+            <div class="form-buttons">
+                <button tuiButton type="submit" appearance="primary" [disabled]="registrationForm.invalid || loading"
+                    size="m" class="submit-button"
+                    style="box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175); border-radius: 10px; background-color: #ffdd2d; color: #000">
+                    {{ loading ? 'Регистрация...' : 'Зарегистрироваться' }}
+                </button>
+            </div>
+        </form>
+
+        <div class="login-link" style="margin-top: 20px; text-align: center;">
+            <p>Уже есть учетная запись? <a routerLink="/auth">Войти</a></p>
+        </div>
+    </div>
+</div>

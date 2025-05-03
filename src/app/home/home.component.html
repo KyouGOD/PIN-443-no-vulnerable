@@ -1,0 +1,201 @@
+<main class="main">
+    <h2 tuiTitle="l" class="main-title">Ваши продукты</h2>
+
+    <!-- Loading state -->
+    <div *ngIf="loading" class="loading-state">
+        <tui-loader size="l"></tui-loader>
+    </div>
+
+    <!-- Error state with retry button -->
+    <div *ngIf="!loading && error" class="error-state">
+        <p>Не удалось загрузить счета. Пожалуйста, попробуйте позже.</p>
+        <button tuiButton type="button" appearance="primary" (click)="refreshAccounts()">
+            Повторить
+        </button>
+    </div>
+
+    <!-- Empty state message when no accounts -->
+    <div *ngIf="!loading && !error && !hasAccounts" class="empty-state">
+        <p>У вас пока нет открытых счетов.</p>
+    </div>
+
+    <!-- Main content when accounts are loaded -->
+    <ng-container *ngIf="!loading && !error && hasAccounts && items.length > 0">
+        <tui-carousel [draggable]="true" [itemsCount]="1" [(index)]="index" (shift)="opacity = $event">
+            <ng-container *ngFor="let item of items; let i = index">
+                <div *tuiItem tuiCardMedium class="card" [style.background]="item.gradient">
+                    <h2 tuiTitle>
+                        BANK
+                        <span tuiSubtitle>{{ item.title }}</span>
+                    </h2>
+
+                    <tui-badge size="xl" class="money">
+                        <tui-icon icon="@tui.wallet" />
+                        {{ item.content }}
+                    </tui-badge>
+                </div>
+            </ng-container>
+        </tui-carousel>
+
+        <tui-pagination size="s" [length]="items.length" [(index)]="index" />
+
+        <div tuiButtonGroup [style.background-color]="items[index].color"
+            style="margin: 1rem; box-shadow: 0 0 1rem 0 rgba(0,0,0,0.175)">
+            <tui-elastic-container [style.opacity]="opacity * 2">
+                <ng-container *ngIf="items[index]">
+                    <button tuiButton type="button" appearance="flat" [style.background-color]="items[index].color"
+                        [style.color]="'var(--tui-text-01)'" routerLink="/payments">
+                        <tui-icon icon="@tui.circle-plus" />
+                        Перевести
+                    </button>
+
+                    <button tuiButton type="button" appearance="flat" [style.background-color]="items[index].color"
+                        [style.color]="'var(--tui-text-01)'" (click)="openDepositDialog()">
+                        <tui-icon icon="@tui.circle-plus" />
+                        Пополнить
+                    </button>
+
+                    <button tuiButton type="button" appearance="flat" [style.background-color]="items[index].color"
+                        [style.color]="'var(--tui-text-01)'" (click)="openWithdrawDialog()">
+                        <tui-icon icon="@tui.circle-minus" />
+                        Вывести
+                    </button>
+                </ng-container>
+            </tui-elastic-container>
+        </div>
+
+        <!-- Отображение суммарного баланса всех счетов -->
+        <div class="total-balance-container" *ngIf="hasAccounts && items.length > 0">
+            <tui-badge size="xl" class="total-balance">
+                <tui-icon icon="@tui.wallet" />
+                <span>Общий баланс: {{ getTotalBalance() }}</span>
+            </tui-badge>
+        </div>
+    </ng-container>
+
+    <div class="buttons-container" style="margin: 1rem;">
+        <button tuiSurface="floating" type="button" class="scale" (click)="createCreditCard()"
+            [disabled]="isCreatingAccount">
+            <span><strong>Оформить кредитную карту</strong></span>
+            <tui-badge appearance="primary" size="s" class="badge">
+                от 15% годовых
+            </tui-badge>
+        </button>
+        <button tuiSurface="floating" type="button" class="scale" (click)="createCheckingAccount()"
+            [disabled]="isCreatingAccount">
+            <span><strong>Открыть расчетный счет</strong></span>
+        </button>
+        <button tuiSurface="floating" type="button" class="scale" (click)="createDebitAccount()"
+            [disabled]="isCreatingAccount">
+            <span><strong>Открыть дебетовый счёт</strong></span>
+            <tui-badge appearance="primary" size="s" class="badge">
+                от 17% годовых
+            </tui-badge>
+        </button>
+        <button tuiSurface="floating" type="button" class="scale" (click)="showNotification()">
+            <span><strong>Обменять валюту</strong></span>
+            <div class="badge-container">
+                <tui-badge appearance="primary" size="s" class="badge">₽</tui-badge>
+                <tui-badge appearance="primary" size="s" class="badge">€</tui-badge>
+<tui-badge appearance="primary" size="s" class="badge">$</tui-badge>
+</div>
+        </button>
+        <button tuiSurface="floating" type="button" class="scale" (click)="showNotification()">
+            <span><strong>Оплатить коммунальные услуги</strong></span>
+        </button>
+
+        <button tuiSurface="floating" type="button" class="scale" (click)="showNotification()">
+            <span><strong>Ипотечные программы</strong></span>
+            <tui-badge appearance="primary" size="s" class="badge">
+                от 5% годовых
+            </tui-badge>
+        </button>
+    </div>
+
+    <!-- Deposit Dialog -->
+    <div *ngIf="isDepositDialogOpen" class="transaction-dialog-overlay">
+        <div class="transaction-dialog">
+            <h3 class="dialog-title">Пополнение счета</h3>
+            <div class="dialog-content">
+                <div class="account-info" *ngIf="items[index]?.account">
+                    <p>Счет: {{items[index].account?.formattedType}}</p>
+                    <p>Текущий баланс: {{items[index].account?.balance}}
+                        {{getCurrencySymbol(items[index].account?.displayName || '')}}</p>
+                </div>
+
+                <!-- Сумма пополнения -->
+                <div class="form-group">
+                    <label for="depositAmount">Сумма</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{getCurrencySymbol(items[index].account?.displayName ||
+                            '')}}</span>
+                        <input type="number" id="depositAmount" class="form-control" [(ngModel)]="transactionAmount"
+                            min="1" placeholder="0.00">
+                    </div>
+                </div>
+
+                <!-- Описание транзакции -->
+                <div class="form-group">
+                    <label for="depositDescription">Описание</label>
+                    <input type="text" id="depositDescription" class="form-control" [(ngModel)]="transactionDescription"
+                        placeholder="Введите описание">
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn btn-secondary" (click)="closeTransactionDialog()"
+                    [disabled]="isProcessingTransaction">
+                    Отмена
+                </button>
+                <button type="button" class="btn btn-primary" (click)="performDeposit()"
+                    [disabled]="isProcessingTransaction || !transactionAmount">
+                    <span *ngIf="isProcessingTransaction" class="spinner"></span>
+                    Пополнить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Dialog -->
+    <div *ngIf="isWithdrawDialogOpen" class="transaction-dialog-overlay">
+        <div class="transaction-dialog">
+            <h3 class="dialog-title">Вывод средств</h3>
+            <div class="dialog-content">
+                <div class="account-info" *ngIf="items[index]?.account">
+                    <p>Счет: {{items[index].account?.formattedType}}</p>
+                    <p>Доступно: {{items[index].account?.balance}} {{getCurrencySymbol(items[index].account?.displayName
+                        || '')}}</p>
+                </div>
+
+                <!-- Сумма вывода -->
+                <div class="form-group">
+                    <label for="withdrawAmount">Сумма</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{getCurrencySymbol(items[index].account?.displayName ||
+                            '')}}</span>
+                        <input type="number" id="withdrawAmount" class="form-control" [(ngModel)]="transactionAmount"
+                            [max]="items[index].account?.numericBalance || 0" min="1" placeholder="0.00">
+                    </div>
+                </div>
+
+                <!-- Описание транзакции -->
+                <div class="form-group">
+                    <label for="withdrawDescription">Описание</label>
+                    <input type="text" id="withdrawDescription" class="form-control"
+                        [(ngModel)]="transactionDescription" placeholder="Введите описание">
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn btn-secondary" (click)="closeTransactionDialog()"
+                    [disabled]="isProcessingTransaction">
+                    Отмена
+                </button>
+                <button type="button" class="btn btn-primary" (click)="performWithdraw()"
+                    [disabled]="isProcessingTransaction || !transactionAmount">
+                    <span *ngIf="isProcessingTransaction" class="spinner"></span>
+                    Вывести
+                </button>
+            </div>
+        </div>
+    </div>
+
+</main>

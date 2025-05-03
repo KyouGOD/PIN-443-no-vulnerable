@@ -1,0 +1,53 @@
+<tui-root>
+  <ng-container *ngIf="(isAuthenticated$ | async) && !shouldHideHeader()">
+    <header class="icons-container">
+      <tui-icon icon="@tui.square" [style.font-size.rem]="3.585" [style.color]="'var(--tui-background-accent-1)'" />
+
+      <tui-avatar class="avatar" [src]="'https://github.com/fedorovVNpin221.png' | tuiFallbackSrc: '@tui.user' | async"
+        (click)="showDialog(long)" />
+
+      <ng-template #long>
+        <div class="background"></div>
+        <header #header class="header" (tuiElasticSticky)="onElastic($event, header)">
+          <section class="logo">
+            <tui-avatar size="xl" [src]="'https://github.com/fedorovVNpin221.png' | tuiFallbackSrc: '@tui.user' | async"
+              class="icon" />
+          </section>
+          <div class="wrapper">
+            <p class="description"><strong>Профиль</strong></p>
+          </div>
+        </header>
+        <blockquote *ngIf="user">
+          <h1>Имя пользователя</h1>
+          <p>{{ user.username }}</p>
+
+          <h1>Адрес электронной почты</h1>
+          <p>{{ user.email }}</p>
+
+          <h1>Номер телефона</h1>
+          <p>{{ user.phone }}</p>
+        </blockquote>
+      </ng-template>
+    </header>
+  </ng-container>
+
+  <ng-container *ngIf="isAuthenticated$ | async">
+    <nav class="navigation" tuiTabBar>
+      <button tuiTabBarItem type="button" icon="@tui.house" routerLink="/home">
+        Главная
+      </button>
+      <button tuiTabBarItem type="button" icon="@tui.badge-russian-ruble" routerLink="/payments">
+        Платежи
+      </button>
+      <button tuiTabBarItem type="button" icon="@tui.history" routerLink="/history">
+        История
+      </button>
+      <button tuiTabBarItem type="button" icon="@tui.bot-message-square" routerLink="/chat">
+        Чат-бот
+      </button>
+    </nav>
+  </ng-container>
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+</tui-root>

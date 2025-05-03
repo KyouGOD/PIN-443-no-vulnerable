@@ -1,0 +1,109 @@
+@import '@taiga-ui/core/styles/taiga-ui-local.less';
+
+.webview-install-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--tui-base-02);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 999;
+  border-top: 1px solid var(--tui-base-04);
+  animation: slide-up 0.3s ease-in-out;
+  
+  @media @tui-mobile {
+    padding: 0.75rem;
+  }
+}
+
+.webview-install-content {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.webview-install-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.webview-install-icon {
+  width: 48px;
+  height: 48px;
+  margin-right: 1rem;
+  border-radius: 8px;
+  
+  @media @tui-mobile {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.webview-install-text {
+  flex: 1;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--tui-text-01);
+    
+    @media @tui-mobile {
+      font-size: 1rem;
+    }
+  }
+  
+  p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--tui-text-03);
+    
+    @media @tui-mobile {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Стили для нового блока с информацией
+.webview-install-info {
+  margin-bottom: 1rem;
+  
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+      color: var(--tui-text-02);
+      
+      @media @tui-mobile {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+.webview-install-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  
+  @media @tui-mobile {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

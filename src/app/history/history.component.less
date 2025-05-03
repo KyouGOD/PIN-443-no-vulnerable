@@ -1,0 +1,279 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: auto; /* убираем фиксированную высоту */
+    overflow: visible; /* разрешаем переполнение для правильного отображения */
+    flex: 1; /* заполнить все доступное пространство */
+    width: 100%;
+}
+
+.wrapper {
+    display: flex;
+    gap: 1rem;
+    background-color: #fff;
+    align-items: center;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.175);
+}
+
+.selected-range {
+    margin: 0;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--tui-text-01);
+    background-color: #fff;
+    border-radius: 10px;
+
+    p {
+        margin: 0;
+    }
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1; /* заполнить все доступное пространство */
+    padding-bottom: 3.5rem; /* добавляем отступ для навигационной панели */
+
+    .main-title {
+        padding-bottom: 1rem;
+        align-self: center;
+    }
+
+    .history-container {
+        width: 21rem;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        background: #7d8ca0;
+        border-radius: 20px;
+
+        .month-controls {
+            position: relative;
+
+            .tui-space_bottom-2 {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+                background-color: #ffdd2d;
+                cursor: pointer;
+                overflow: hidden;
+                transition: all 0.2s ease;
+                box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.175);
+                will-change: transform;
+                padding: 0.5rem;
+                border-radius: 0.75rem;
+                margin-bottom: 1rem;
+                color: #000;
+            }
+        }
+
+        .summary-blocks {
+            display: flex;
+            gap: 1rem;
+            box-shadow: var(--tui-shadow);
+            border-radius: var(--tui-radius-l);
+            background-color: #fff;
+        }
+
+        .summary-block {
+            flex: 1;
+            padding: 1rem;
+            border-radius: var(--tui-radius-l);
+            background: var(--tui-base-02);
+
+            &.expenses {
+                border-left: 4px solid var(--tui-error-fill);
+            }
+
+            &.income {
+                border-left: 4px solid var(--tui-success-fill);
+            }
+        }
+
+        .summary-label {
+            font: var(--tui-font-text-m);
+            color: var(--tui-text-02);
+            margin-bottom: 8px;
+        }
+
+        .summary-amount {
+            font: var(--tui-font-heading-4);
+            font-weight: bold;
+        }
+
+        .transactions-list {
+            box-shadow: var(--tui-shadow);
+            border-radius: var(--tui-radius-l);
+            background: var(--tui-base-01);
+        }
+
+        .transaction-header {
+            display: grid;
+            grid-template-columns: 6rem 1fr auto; // описание - растягивается, сумма - по содержимому
+            align-items: center;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        .transaction-main-info {
+            display: contents; // Убираем обертку, чтобы элементы попали в grid
+        }
+
+        .transaction-date {
+            color: var(--tui-text-02);
+            font: var(--tui-font-text-s);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .transaction-description {
+            text-align: start;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            text-align: right;
+            white-space: nowrap;
+
+            &.income {
+                color: var(--tui-success-fill);
+            }
+        }
+
+        .transaction-details {
+            padding: 16px;
+            background: var(--tui-base-02);
+            border-radius: 0 0 var(--tui-radius-l) var(--tui-radius-l);
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .detail-label {
+            width: 120px;
+            color: var(--tui-text-02);
+            // font: var (--tui-font-text-s);
+        }
+
+        .detail-value {
+            flex: 1;
+            font: var(--tui-font-text-m);
+        }
+
+        .month-selector {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+            background: var(--tui-base-01);
+            box-shadow: var(--tui-shadow);
+            padding: 10px;
+            border-radius: var(--tui-radius-l);
+            width: max-content;
+            max-width: 300px;
+        }
+
+        .month-controls button {
+            box-shadow: var(--tui-shadow);
+            z-index: 11;
+            position: relative;
+        }
+    }
+}
+
+.operations-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.175);
+    will-change: transform;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+    color: #000;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    .tui-text_h2 {
+        margin: 0 0 1rem 0;
+        padding: 0;
+    }
+}
+
+.account-selection {
+    margin-bottom: 1.5rem;
+    
+    .account-selection-title {
+        color: #fff;
+        font-size: 1.125rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .card {
+        width: 100%;
+        max-width: 18rem;
+        aspect-ratio: 1.586 / 1;
+        align-self: center;
+        color: #fff;
+        border-radius: var(--tui-radius-m);
+        box-shadow: var(--tui-shadow);
+    }
+    
+    tui-carousel {
+        margin-bottom: 1rem;
+    }
+    
+    tui-pagination {
+        margin: 0 auto;
+        margin-bottom: 1rem;
+    }
+}
+
+.money {
+    color: #333;
+    background: #ffdd2d;
+    border-radius: var(--tui-radius-xs);
+}
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: var(--tui-radius-l);
+    margin: 1rem 0;
+}
+
+.no-transactions {
+    text-align: center;
+    color: var(--tui-text-02);
+    font-style: italic;
+    padding: 2rem;
+}

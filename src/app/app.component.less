@@ -1,0 +1,107 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.icons-container {
+  display: flex;
+  align-items: center;
+  margin: 1rem 1rem 0 1rem;
+
+  .avatar {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.portal {
+  position: fixed;
+  bottom: 1.25rem;
+  animation: tuiFadeIn var(--tui-duration) var(--tui-duration);
+  animation-fill-mode: backwards;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  inline-size: calc(100% + 3.5rem);
+  margin-top: -1.75rem;
+  margin-left: -1.75rem;
+  text-align: center;
+  overflow-wrap: break-word;
+  background-color: #fbf1c0;
+  border-radius: 1rem 1rem 0 0;
+  transform-origin: top left;
+}
+
+.background {
+  position: sticky;
+  top: -1rem;
+  max-width: 100%;
+  inline-size: calc(100% + 3.5rem);
+  margin: -1.75rem 0 -1.75rem -1.75rem;
+  background: #fbf1c0;
+}
+
+.wrapper {
+  background: var(--tui-background-base-alt);
+  padding: 1rem;
+}
+
+.logo {
+  position: relative;
+  block-size: 7rem;
+  color: var(--tui-background-base);
+}
+
+.icon {
+  margin-top: 1rem;
+  box-shadow: 0 0 0 2px var(--tui-background-base-alt);
+  color: var(--tui-background-base-alt);
+  background: var(--tui-chart-categorical-20);
+}
+
+.description {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  margin: 0;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: var(--tui-base-01);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  --tui-active-color: #debe0bf2;
+  --tui-active-border: 1rem solid #000;
+}
+
+.navigation button {
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
+  padding: 1rem;
+  /* Динамический отступ снизу для навигационной панели */
+  padding-bottom: 4.5rem; 
+}

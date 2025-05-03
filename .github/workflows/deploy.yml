@@ -1,0 +1,32 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync project files (with rsync)
+        run: |
+          rsync -avz --delete --exclude '.git' ./ root@${{ secrets.SSH_HOST }}:~/angular_app/
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} root@${{ secrets.SSH_HOST }} "cd ~/angular_app && \
+          export CACHE_BUST=$(date +%s) && \
+          docker compose down -v && \
+          docker compose build --no-cache && \
+          docker compose up -d --force-recreate"
